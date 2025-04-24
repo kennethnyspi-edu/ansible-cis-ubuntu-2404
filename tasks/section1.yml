@@ -915,7 +915,7 @@
 - name: "SECTION1 | 1.6.4 | Ensure permissions on /etc/motd are configured"
   ansible.builtin.file:
     dest: /etc/motd
-    state: file
+    state: touch
     owner: "{{ cis_ubuntu2404_section1_owner_default }}"
     group: "{{ cis_ubuntu2404_section1_group_default }}"
     mode: "{{ cis_ubuntu2404_section1_mode_etc_issue_motd }}"
