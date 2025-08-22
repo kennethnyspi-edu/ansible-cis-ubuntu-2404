@@ -1258,7 +1258,7 @@
       #  chage --maxdays {{ cis_ubuntu2404_password_pass_max_days }} {{ item }}
       ansible.builtin.user:
         name: "{{ item }}"
-        password_expire_max_days: "{{ cis_ubuntu2404_password_pass_max_days }}"
+        password_expire_max: "{{ cis_ubuntu2404_password_pass_max_days }}"
       loop: "{{ ansible_facts.getent_passwd | dict2items | map(attribute='key') | list }}"
       when: "'/sbin/nologin' not in ansible_facts.getent_passwd[item][5] and ansible_facts.getent_passwd[item][0] != '!'"
       #loop: "{{ cis_ubuntu2404_expiration_users_raw.stdout_lines }}"
@@ -1304,7 +1304,7 @@
     - name: "SECTION5 | 5.4.1.2 | Ensure all users comply with PASS_MIN_DAYS"
       ansible.builtin.user:
         name: "{{ item }}"
-        password_min_days: "{{ cis_ubuntu2404_password_pass_min_days }}"
+        password_expire_min: "{{ cis_ubuntu2404_password_pass_min_days }}"
       loop: "{{ ansible_facts.getent_passwd | dict2items | map(attribute='key') | list }}"
       when: "'/sbin/nologin' not in ansible_facts.getent_passwd[item][5] and ansible_facts.getent_passwd[item][0] != '!'"
 
