@@ -1241,6 +1241,9 @@
         owner: root
         group: root
         mode: "0644"
+    - name: "SECTION5 | 5.4.1.1 | Gather getent passwd facts"
+      ansible.builtin.getent:
+        database: passwd
     #- name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured | find user with wrong expiration value"
     #  ansible.builtin.shell: |
     #    set -o pipefail &&
@@ -1295,6 +1298,9 @@
     #  loop: "{{ cis_ubuntu2404_minimum_users_raw.stdout_lines }}"
     #  changed_when: false
     #  failed_when: false
+    - name: "SECTION5 | 5.4.1.2 | Gather getent passwd facts"
+      ansible.builtin.getent:
+        database: passwd
     - name: "SECTION5 | 5.4.1.2 | Ensure all users comply with PASS_MIN_DAYS"
       ansible.builtin.user:
         name: "{{ item }}"
@@ -1335,6 +1341,9 @@
     #  loop: "{{ cis_ubuntu2404_expiration_warning_users_raw.stdout_lines }}"
     #  changed_when: false
     #  failed_when: false
+    - name: "SECTION5 | 5.4.1.3 | Gather getent passwd facts"
+      ansible.builtin.getent:
+        database: passwd
     - name: "SECTION5 | 5.4.1.3 | Ensure all users comply with PASS_WARN_AGE"
       ansible.builtin.user:
         name: "{{ item }}"
