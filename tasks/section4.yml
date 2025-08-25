@@ -91,6 +91,33 @@
       community.general.ufw:
         state: enabled
 
+- name: "SECTION4 | 4.2.3a | Ensure ufw Zabbix monitoring rules are present"
+  when:
+    - cis_ubuntu2404_firewall == "ufw"
+  tags:
+    - rule_4_1
+    - server_l1
+    - workstation_l1
+    - zabbix
+  block:
+    - name: "SECTION4 | 4.2.3a | Allow incoming Zabbix agent (10050/tcp) from monitoring server"
+      community.general.ufw:
+        rule: allow
+        direction: in
+        proto: tcp
+        from_ip: 10.20.193.184
+        port: "10050"
+        comment: "Zabbix server inbound agent checks"
+
+    - name: "SECTION4 | 4.2.3a | Allow outgoing Zabbix agent communication (10051/tcp) to monitoring server"
+      community.general.ufw:
+        rule: allow
+        direction: out
+        proto: tcp
+        to_ip: 10.20.193.184
+        port: "10051"
+        comment: "Zabbix agent outbound to server"
+
 - name: "SECTION4 | 4.2.4 | Ensure ufw loopback traffic is configured"
   when:
     - cis_ubuntu2404_rule_4_2_4
