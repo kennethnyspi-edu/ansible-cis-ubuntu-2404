@@ -39,10 +39,13 @@
     - workstation_l2
 
 - name: >
-    SECTION1 | 1.1.1.10 | Ensure unused filesystems kernel modules are not available | unload kernel module if loaded for {{ cis_ubuntu2404_fs_module_file }}
+    SECTION1 | 1.1.1.10 | Ensure unused filesystems kernel modules are not available | Attempt to unload kernel module if loaded for {{ cis_ubuntu2404_fs_module_file }}
   community.general.modprobe:
     name: "{{ cis_ubuntu2404_fs_module_file }}"
     state: absent
+  register: cis_ubuntu2404_modprobe_result
+  failed_when: false
+  changed_when: cis_ubuntu2404_modprobe_result.rc == 0
   when:
     - cis_ubuntu2404_lsmod_output.rc == 0
     - not cis_ubuntu2404_is_fs_mounted | bool
@@ -67,9 +70,9 @@
       line: "install {{ cis_ubuntu2404_fs_module_file }} /bin/false"
     - reg: "{{ cis_ubuntu2404_regex_base_search }}blacklist {{ cis_ubuntu2404_fs_module_file }}$"
       line: "blacklist {{ cis_ubuntu2404_fs_module_file }}"
-  when:
-    - cis_ubuntu2404_lsmod_output.rc == 0
-    - not cis_ubuntu2404_is_fs_mounted | bool
+  #when:
+  #  - cis_ubuntu2404_lsmod_output.rc == 0
+  #  - not cis_ubuntu2404_is_fs_mounted | bool
   tags:
     - rule_1_1_1
     - server_l2
