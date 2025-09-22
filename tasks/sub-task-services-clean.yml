@@ -55,4 +55,4 @@
   ansible.builtin.debug:
     msg: "Skipping purge of {{ outer_item.apt }} due to dependency conflicts. Manual review required."
   when:
-    - purge_result.rc is failed
+    - purge_result.failed | default(false)
