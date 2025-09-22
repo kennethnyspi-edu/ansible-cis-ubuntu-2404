@@ -42,8 +42,17 @@
     - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | purge candidate info"
       ansible.builtin.debug:
         msg: "Packages to be removed: {{ outer_item.apt }}"
-    - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | purge service"
+    - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | attempt purge service"
       ansible.builtin.apt:
         name: "{{ outer_item.apt }}"
         state: absent
         purge: true
+      register: purge_result
+      failed_when: purge_result.rc not in [0,100] # don't hard fail if dependency issue
+      ignore_errors: true
+
+- name: "SECTION-X | SUB-TASK | Warn if purge skipped due to dependency issues"
+  ansible.builtin.debug:
+    msg: "Skipping purge of {{ outer_item.apt }} due to dependency conflicts. Manual review required."
+  when:
+    - purge_result.rc != 0
