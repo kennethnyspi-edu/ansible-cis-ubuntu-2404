@@ -526,6 +526,14 @@
         owner: "{{ item.split()[0] }}"
         group: "{{ item.split()[0] }}"
       with_items: "{{ cis_ubuntu2404_list_of_user_home.stdout_lines }}"
+      register: cis_ubuntu2404_rule_7_2_9_result
+      failed_when: false
+      changed_when: false
+    - name: "SECTION7 | 7.2.9 | Log failures"
+      ansible.builtin.debug:
+        msg: "Failed to set access on {{ item.item }} → {{ item.msg }}"
+      loop: "{{ cis_ubuntu2404_rule_7_2_9_result | selectattr('failed','defined') | selectattr('failed') | list }}"
+      when: cis_ubuntu2404_rule_7_2_9_result is defined
 
 - name: "SECTION7 | 7.2.10 | Ensure local interactive user dot files access is configured"
   when:
