@@ -483,6 +483,14 @@
         logfiles_item_owner: "{{ cis_ubuntu2404_logfiles_access | selectattr('files', 'search', item.path | basename) | map(attribute='owner') | first }}"
         logfiles_item_group: "{{ cis_ubuntu2404_logfiles_access | selectattr('files', 'search', item.path | basename) | map(attribute='group') | first }}"
         logfiles_item_mode: "{{ cis_ubuntu2404_logfiles_access | selectattr('files', 'search', item.path | basename) | map(attribute='mode') | first }}"
+      register: cis_ubuntu2404_rule_6_1_4_1_result
+      failed_when: false
+      changed_when: false
+    - name: "SECTION6 | 6.1.4.1 | Log failures if any"
+      ansible.builtin.debug:
+        msg: "Failed to set access on {{ item.item.path }} → {{ item.msg }}"
+      loop: "{{ cis_6141_result.results | selectattr('failed','defined') | selectattr('failed') | list }}"
+      when: cis_6141_result is defined
 
 # ------------------------------------------------------------------------------
 
