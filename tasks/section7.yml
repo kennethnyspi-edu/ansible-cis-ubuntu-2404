@@ -144,7 +144,7 @@
     - name: "SECTION7 | 7.1.11 | Ensure world writable files and directories are secured | get list of world writable files"
       ansible.builtin.shell: >
         set -o pipefail &&
-        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*(nfs|proc|smb|vfat|iso9660|efivarfs|selinuxfs)/ && $2 !~ /^(\/run\/user\/|\/tmp|\/var\/tmp)/){print $2}' |
+        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*({{ cis_excluded_fstypes_regex }})/ && $2 !~ /^(\/run\/user\/|\/tmp|\/var\/tmp)/){print $2}' |
         xargs -I '{}' find '{}' -xdev
         ! -path "/run/user/*" ! -path "/proc/*" ! -path "*/containerd/*" ! -path "*/kubelet/pods/*" ! -path "*/kubelet/plugins/*" ! -path "/sys/*" ! -path "/snap/*"
         ! -path "/media/*" ! -path "/mnt/*"
@@ -163,7 +163,7 @@
     - name: "SECTION7 | 7.1.11 | Ensure world writable files and directories are secured | get list of world writable directories"
       ansible.builtin.shell: >
         set -o pipefail &&
-        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*(nfs|proc|smb|vfat|iso9660|efivarfs|selinuxfs)/ && $2 !~ /^(\/run\/user\/|\/tmp|\/var\/tmp)/){print $2}' |
+        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*({{ cis_excluded_fstypes_regex }})/ && $2 !~ /^(\/run\/user\/|\/tmp|\/var\/tmp)/){print $2}' |
         xargs -I '{}' find '{}' -xdev
         ! -path "/run/user/*" ! -path "/proc/*" ! -path "*/containerd/*" ! -path "*/kubelet/pods/*" ! -path "*/kubelet/plugins/*" ! -path "/sys/*" ! -path "/snap/*"
         ! -path "/media/*" ! -path "/mnt/*"
@@ -191,7 +191,7 @@
     - name: "SECTION7 | 7.1.12 | Ensure no files or directories without an owner and a group exist | get list of unowned or ungrouped files and directories"
       ansible.builtin.shell: >
         set -o pipefail &&
-        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*(nfs|proc|smb|vfat|iso9660|efivarfs|selinuxfs)/ && $2 !~ /^\/run\/user\//){print $2}' |
+        findmnt -Dkerno fstype,target | awk '($1 !~ /^\s*({{ cis_excluded_fstypes_regex }})/ && $2 !~ /^\/run\/user\//){print $2}' |
         xargs -I '{}' find '{}' -xdev
         ! -path "/run/user/*" ! -path "/proc/*" ! -path "*/containerd/*" ! -path "*/kubelet/pods/*"
         ! -path "*/kubelet/plugins/*" ! -path "/sys/fs/cgroup/memory/*" ! -path "/var/*/private/*"

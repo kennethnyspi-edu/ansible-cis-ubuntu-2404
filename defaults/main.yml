@@ -336,7 +336,7 @@ cis_ubuntu2404_rule_7_1_7: true
 cis_ubuntu2404_rule_7_1_8: true
 cis_ubuntu2404_rule_7_1_9: true
 cis_ubuntu2404_rule_7_1_10: true
-cis_ubuntu2404_rule_7_1_11: false  ## NOTE: disabled by kmasis
+cis_ubuntu2404_rule_7_1_11: true  ## NOTE: disabled by kmasis
 cis_ubuntu2404_rule_7_1_12: true
 cis_ubuntu2404_rule_7_1_13: true
 cis_ubuntu2404_rule_7_2_1: true
@@ -349,6 +349,37 @@ cis_ubuntu2404_rule_7_2_7: true
 cis_ubuntu2404_rule_7_2_8: true
 cis_ubuntu2404_rule_7_2_9: true
 cis_ubuntu2404_rule_7_2_10: true
+
+# ---------------------------------------
+# Excluding paths and filesystems
+#
+cis_excluded_fstypes:
+  - nfs
+  - nfs4
+  - cifs
+  - smb
+  - proc
+  - vfat
+  - iso9660
+  - efivarfs
+  - selinuxfs
+
+cis_excluded_fstypes_regex: "{{ cis_excluded_fstypes | join('|') }}"
+
+cis_excluded_paths:
+  - /kubelet
+  - /containerd
+  - /MRI_PUBDS
+  - /MRI_DATA
+  - /XNATdata
+  - /MWALLDATA2
+  - /MWALLDATA2
+  - /MRI_WORKDATA
+  - /HORGA_DATA
+  - /Data
+  - /NINAGAOS
+  - /mindsmb
+  - /MIND-src
 
 # ------------------------------------------------------------------------------
 # HELPER
