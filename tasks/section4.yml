@@ -93,6 +93,7 @@
 
 - name: "SECTION4 | 4.2.3a | Ensure ufw Zabbix monitoring rules are present"
   when:
+    - cis_ubuntu2404_rule_4_2_3
     - cis_ubuntu2404_firewall == "ufw"
   tags:
     - rule_4_1
@@ -117,6 +118,68 @@
         to_ip: 10.20.193.184
         port: "10051"
         comment: "Zabbix agent outbound to server"
+
+- name: "SECTION4 | 4.2.3b | Add dynamic and role-based firewall rules"
+  when:
+    - cis_ubuntu2404_rule_4_2_3
+    - cis_ubuntu2404_firewall == "ufw"
+  tags:
+    - firewall
+  block:
+
+    - name: "Detect open listening ports"
+      ansible.builtin.shell: |
+        ss -tuln | awk 'NR>1 {print $5}' | sed 's/.*://g' | sort -u
+      register: detected_ports
+      changed_when: false
+      failed_when: false
+
+    - name: "Convert detected ports to list"
+      ansible.builtin.set_fact:
+        dynamic_ports: "{{ detected_ports.stdout_lines | map('int') | list }}"
+      when: detected_ports.stdout_lines | length > 0
+
+    - name: "Set global ports always allowed (Splunk + Zabbix)"
+      ansible.builtin.set_fact:
+        global_ports:
+          - { port: 8089, proto: tcp, comment: "Splunk management" }
+
+    - name: "Define role-based firewall profiles"
+      ansible.builtin.set_fact:
+        firewall_profiles:
+          web_profile:
+            - { port: 80, proto: tcp, comment: "HTTP" }
+            - { port: 443, proto: tcp, comment: "HTTPS" }
+            - { port: 8080, proto: tcp, comment: "Web Management" }
+            - { port: "1024:2048", proto: tcp, comment: "Low dynamic range" }
+            - { port: "32768:60999", proto: tcp, comment: "High dynamic range" }
+          database_profile:
+            - { port: 5432, proto: tcp, comment: "PostgreSQL" }
+            - { port: 3306, proto: tcp, comment: "MySQL/MariaDB" }
+            - { port: 1433, proto: tcp, comment: "MSSQL" }
+          security_profile:
+            - { port: 514, proto: tcp, comment: "Syslog" }
+
+    - name: "Combine global, role, and dynamic rules"
+      ansible.builtin.set_fact:
+        combined_ports: >-
+          {{
+            global_ports
+            + (role_profiles[firewall_role] | default([]))
+            + (dynamic_ports | map('regex_replace', '^(.*)$', '{"port": "\\1", "proto": "tcp", "comment": "Detected open port"}') | map('from_json') | list)
+          }}
+
+    - name: "Apply firewall rules"
+      community.general.ufw:
+        rule: allow
+        direction: in
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        comment: "{{ item.comment }}"
+      loop: "{{ combined_ports | unique }}"
+      loop_control:
+        label: "{{ item.comment }} ({{ item.port }}/{{ item.proto }})"
+      ignore_errors: true
 
 - name: "SECTION4 | 4.2.4 | Ensure ufw loopback traffic is configured"
   when:
