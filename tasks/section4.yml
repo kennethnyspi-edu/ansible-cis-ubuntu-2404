@@ -168,6 +168,7 @@
             + (firewall_profiles[firewall_role] | default([]))
             + (dynamic_ports | map('regex_replace', '^(.*)$', '{"port": "\\1", "proto": "tcp", "comment": "Detected open port"}') | map('from_json') | list)
           }}
+          
     - name: "Debug combined firewall rules"
       ansible.builtin.debug:
         msg: "{{ combined_ports | to_nice_yaml }}"
