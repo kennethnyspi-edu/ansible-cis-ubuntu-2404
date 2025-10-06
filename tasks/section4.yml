@@ -127,24 +127,24 @@
     - firewall
   block:
 
-    - name: "Detect open listening ports"
+    - name: "SECTION4 | 4.2.3b | Detect open listening ports"
       ansible.builtin.shell: |
         ss -tuln | awk 'NR>1 {print $5}' | sed 's/.*://g' | sort -u
       register: detected_ports
       changed_when: false
       failed_when: false
 
-    - name: "Convert detected ports to list"
+    - name: "SECTION4 | 4.2.3b | Convert detected ports to list"
       ansible.builtin.set_fact:
         dynamic_ports: "{{ detected_ports.stdout_lines | map('int') | list }}"
       when: detected_ports.stdout_lines | length > 0
 
-    - name: "Set global ports always allowed (Splunk + Zabbix)"
+    - name: "SECTION4 | 4.2.3b | Set global ports always allowed (Splunk + Zabbix)"
       ansible.builtin.set_fact:
         global_ports:
           - { port: 8089, proto: tcp, comment: "Splunk management" }
 
-    - name: "Define role-based firewall profiles"
+    - name: "SECTION4 | 4.2.3b | Define role-based firewall profiles"
       ansible.builtin.set_fact:
         firewall_profiles:
           web_profile:
@@ -159,21 +159,33 @@
             - { port: 1433, proto: tcp, comment: "MSSQL" }
           security_profile:
             - { port: 514, proto: tcp, comment: "Syslog" }
+          default_profile:
+            - { port: 22, proto: tcp, comment: "Default SSH access" }
 
-    - name: "Combine global, role, and dynamic rules"
+    - name: "SECTION4 | 4.2.3b | Combine global, role, and dynamic rules"
       ansible.builtin.set_fact:
         combined_ports: >-
           {{
             global_ports
-            + (firewall_profiles[firewall_role] | default([]))
+            + (
+                firewall_role is defined
+                and (firewall_profiles[firewall_role] | default([]))
+                or []
+              )
             + (dynamic_ports | map('regex_replace', '^(.*)$', '{"port": "\\1", "proto": "tcp", "comment": "Detected open port"}') | map('from_json') | list)
           }}
-          
-    - name: "Debug combined firewall rules"
+      when: firewall_role is defined
+
+    - name: "SECTION4 | 4.2.3b | Warn if firewall_role is not defined"
+      ansible.builtin.debug:
+        msg: "⚠️ Skipping role-based firewall configuration because firewall_role is not defined for {{ inventory_hostname }}"
+      when: firewall_role is not defined
+
+    - name: "SECTION4 | 4.2.3b | Debug combined firewall rules"
       ansible.builtin.debug:
         msg: "{{ combined_ports | to_nice_yaml }}"
 
-    - name: "Apply firewall rules"
+    - name: "SECTION4 | 4.2.3b | Apply firewall rules"
       community.general.ufw:
         rule: allow
         direction: in
