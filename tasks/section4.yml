@@ -172,7 +172,7 @@
                 and (firewall_profiles[firewall_role] | default([]))
                 or []
               )
-            + (dynamic_ports | map('regex_replace', '^(.*)$', '{"port": "\\1", "proto": "tcp", "comment": "Detected open port"}') | map('from_json') | list)
+            + (dynamic_ports | map('regex_replace', '^(.*)$', '{"port": "\1", "proto": "tcp", "comment": "Detected open port"}') | map('from_json') | list)
           }}
 
     - name: "SECTION4 | 4.2.3b | Warn if firewall_role is not defined"
