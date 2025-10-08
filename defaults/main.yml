@@ -620,6 +620,28 @@ cis_ubuntu2404_aide_conf_file: /etc/aide/aide.conf
 # ------------------------------------------------------------------------------
 
 # SPECIAL multi similar CIS rules set for 2.1
+cis_ubuntu2404_protected_services:
+  - CIS-CAT_Pro_Dashboard.service
+  - dbus.service
+  - cron.service
+
+# Role-based service protection
+cis_ubuntu2404_role_protected_services:
+  web_profile:
+    - apache2.service
+    - containerd.service
+    - docker.service
+    - nginx.service
+    - mariadb.service
+    - postgresql.service
+  database_profile:
+    - mysql.service
+    - postgresql.service
+  security_profile:
+    - vsftpd.service
+    - proftpd.service
+    - tftpd-hpa.service
+
 cis_ubuntu2404_2_1_rule_set:
   - title: SECTION2 | 2.1.1 | Ensure autofs services are not in use
     service:

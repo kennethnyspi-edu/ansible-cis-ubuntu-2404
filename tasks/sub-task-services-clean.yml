@@ -3,6 +3,18 @@
 
 # ------------------------------------------------------------------------------
 
+# --- Role-aware protected services merge ---
+- name: "SECTION-X | SUB-TASK | Merge protected services based on server role"
+  ansible.builtin.set_fact:
+    cis_ubuntu2404_effective_protected_services: >-
+      {{
+        cis_ubuntu2404_protected_services
+        + (cis_ubuntu2404_role_protected_services[firewall_role] | default([]))
+      }}
+  when: firewall_role is defined
+  tags:
+    - always
+
 - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | service rule info"
   ansible.builtin.debug:
     msg: "{{ outer_item.title }}"
@@ -33,6 +45,7 @@
     - outer_item.service is defined
     - outer_item.disable | bool
     - service_status_check_loop_2_1.results | selectattr('item', 'equalto', item) | map(attribute='stdout') | list | first in ('loadedactive','loadedinactive')
+    - item not in (cis_ubuntu2404_effective_protected_services | default(cis_ubuntu2404_protected_services))  # <-- added
 
 - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | purge task"
   when:
@@ -50,6 +63,8 @@
       register: purge_result
       failed_when: false # don't hard fail if dependency issue
       ignore_errors: true 
+      when:
+        - outer_item.apt | difference(cis_ubuntu2404_effective_protected_services | default(cis_ubuntu2404_protected_services)) | length > 0  # <-- added
 
 - name: "SECTION-X | SUB-TASK | Warn if purge skipped due to dependency issues"
   ansible.builtin.debug:
