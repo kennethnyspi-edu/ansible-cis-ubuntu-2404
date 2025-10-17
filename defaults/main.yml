@@ -624,23 +624,54 @@ cis_ubuntu2404_protected_services:
   - CIS-CAT_Pro_Dashboard.service
   - dbus.service
   - cron.service
+  - mariadb
+  - mariadb.service
+  - mariadb-server
+  - rsync
+  - rsync.service
+  - mariadb
+  - mariadb.service
+  - mariadb-server
+  - chrony
+  - chrony.service
+  - dbus
+  - dbus.service
+  - ssh
+  - sshd
+  - ssh.service
 
 # Role-based service protection
 cis_ubuntu2404_role_protected_services:
   web_profile:
+    - apache2
     - apache2.service
     - containerd.service
+    - docker
     - docker.service
+    - nginx
     - nginx.service
+    - mariadb
     - mariadb.service
+    - mariadb-server
+    - postgresql
     - postgresql.service
   database_profile:
+    - mysql
     - mysql.service
+    - mariadb
+    - mariadb.service
+    - postgresql
     - postgresql.service
   security_profile:
+    - vsftpd
     - vsftpd.service
+    - proftpd
     - proftpd.service
     - tftpd-hpa.service
+    - snmpd
+    - snmpd.service
+    - rsyslog
+    - rsyslog.service
 
 cis_ubuntu2404_2_1_rule_set:
   - title: SECTION2 | 2.1.1 | Ensure autofs services are not in use
