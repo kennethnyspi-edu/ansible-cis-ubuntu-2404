@@ -99,7 +99,7 @@
       async: 60
       poll: 5
     - name: "SECTION4 | 4.2.3 | Ensure ufw service is enabled | Verify ufw is active"
-      ansible.builtin.shell: ufw status | grep -q "Status: active"
+      ansible.builtin.shell: 'ufw status | grep -q "Status: active"'
       register: ufw_status_check
       changed_when: false
       failed_when: ufw_status_check.rc != 0
