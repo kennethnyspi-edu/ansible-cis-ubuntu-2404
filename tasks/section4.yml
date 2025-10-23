@@ -80,16 +80,29 @@
         interface: "{{ ansible_default_ipv4['interface'] }}"
         log: true
         comment: "allow incoming connection on standard ssh port for interface {{ ansible_default_ipv4['interface'] }}"
-    - name: "SECTION4 | 4.2.3 | Ensure ufw service is enabled | enable service"
+      ignore_errors: false
+    - name: "SECTION4 | 4.2.3 | Ensure ufw service is enabled | systemd"
       ansible.builtin.systemd_service:
         name: ufw.service
         daemon_reload: true
         enabled: true
         masked: false
         state: started
-    - name: "SECTION4 | 4.2.3 | Ensure ufw service is enabled | enable ufw"
-      community.general.ufw:
-        state: enabled
+    - name: "SECTION4 | 4.2.3 | Enable UFW safely (non-interactive)"
+      ansible.builtin.shell: |
+        ufw --force enable
+      args:
+        executable: /bin/bash
+      register: ufw_enable_result
+      changed_when: "'already enabled' not in ufw_enable_result.stdout"
+      failed_when: ufw_enable_result.rc not in [0]
+      async: 60
+      poll: 5
+    - name: "SECTION4 | 4.2.3 | Ensure ufw service is enabled | Verify ufw is active"
+      ansible.builtin.shell: ufw status | grep -q "Status: active"
+      register: ufw_status_check
+      changed_when: false
+      failed_when: ufw_status_check.rc != 0
 
 - name: "SECTION4 | 4.2.3a | Ensure ufw Zabbix monitoring rules are present"
   when:
