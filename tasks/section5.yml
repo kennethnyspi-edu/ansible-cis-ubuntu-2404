@@ -1222,7 +1222,6 @@
       check_mode: false
 
 # ------------------------------------------------------------------------------
-
 - name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured"
   when:
     - cis_ubuntu2404_rule_5_4_1_1
@@ -1231,6 +1230,7 @@
     - server_l1
     - workstation_l1
   block:
+
     - name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured | set inside '/etc/login.defs'"
       ansible.builtin.lineinfile:
         dest: /etc/login.defs
@@ -1241,32 +1241,66 @@
         owner: root
         group: root
         mode: "0644"
-    - name: "SECTION5 | 5.4.1.1 | Gather getent passwd facts"
+
+    - name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured | Gather getent passwd facts"
       ansible.builtin.getent:
         database: passwd
-    #- name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured | find user with wrong expiration value"
-    #  ansible.builtin.shell: |
-    #    set -o pipefail &&
-    #    awk -F: '($2~/^\$.+\$/) {if($5 > {{ cis_ubuntu2404_password_pass_max_days }} || $5 < 1) print $1}' /etc/shadow
-    #  args:
-    #    executable: "{{ cis_ubuntu2404_shell_executable }}"
-    #  register: cis_ubuntu2404_expiration_users_raw
-    #  changed_when: false
-    #  check_mode: false
-    - name: "SECTION5 | 5.4.1.1 | Ensure password expiration is configured | update expiration users value"
-      #ansible.builtin.command: >
-      #  chage --maxdays {{ cis_ubuntu2404_password_pass_max_days }} {{ item }}
-      ansible.builtin.user:
-        name: "{{ item }}"
-        password_expire_max: "{{ cis_ubuntu2404_password_pass_max_days }}"
-      loop: "{{ ansible_facts.getent_passwd | dict2items | map(attribute='key') | list }}"
+
+    # Build a list of accounts that need their maxdays changed.
+    # Rules:
+    #  - Exclude 'root'
+    #  - Only consider real users (UID >= 1000)
+    #  - Account must have a hashed password in /etc/shadow (shadow field begins with $y, $5, $6 or $g)
+    #  - Max days (field 6 in shadow, index 5) is either empty/zero/less than 1 or greater than desired value
+    - name: "SECTION5 | 5.4.1.1 | Find accounts needing password maxdays update"
+      ansible.builtin.shell: |
+        set -o pipefail
+        # ENV MAX passed below
+        awk -F: -v MAX="${MAX}" '
+          NR==FNR { shadow[$1] = $0; next }
+          $3 >= 1000 && $1 != "root" {
+            if (shadow[$1] ~ /^\$[y56g]/) {
+              split(shadow[$1], s, ":")
+              # s[6] is the "max days" field in shadow (awk indexing from 1)
+              if (s[6] == "" || s[6] ~ /^[^0-9]/ || (s[6] + 0) > (MAX + 0) || (s[6] + 0) < 1) {
+                print $1
+              }
+            }
+          }
+        ' /etc/shadow /etc/passwd
+      args:
+        executable: /bin/bash
+      register: cis_ubuntu2404_expiration_users_raw
+      changed_when: false
+      failed_when: false
+      check_mode: false
+      environment:
+        MAX: "{{ cis_ubuntu2404_password_pass_max_days }}"
+
+    - name: "SECTION5 | 5.4.1.1 | Debug: users found that will be updated"
+      ansible.builtin.debug:
+        msg: "{{ cis_ubuntu2404_expiration_users_raw.stdout_lines | default([]) }}"
+      when: cis_ubuntu2404_expiration_users_raw.stdout_lines is defined
+
+    - name: "SECTION5 | 5.4.1.1 | Update password expiration (chage --maxdays) for found users (non-interactive)"
+      become: true
+      become_method: sudo
+      ansible.builtin.command:
+        cmd: chage --maxdays {{ cis_ubuntu2404_password_pass_max_days }} {{ item }}
+      loop: "{{ cis_ubuntu2404_expiration_users_raw.stdout_lines | default([]) }}"
+      loop_control:
+        label: "{{ item }}"
+      register: cis_ubuntu2404_chage_results
+      changed_when: "'changed' in cis_ubuntu2404_chage_results and (cis_ubuntu2404_chage_results.changed | default(false))"
+      failed_when: false
       when:
-        - item != 'root'
-        - "'/sbin/nologin' not in ansible_facts.getent_passwd[item][5]" 
-        - ansible_facts.getent_passwd[item][0] != '!'
-      #loop: "{{ cis_ubuntu2404_expiration_users_raw.stdout_lines }}"
-      #changed_when: false
-      #failed_when: false
+        - cis_ubuntu2404_expiration_users_raw.stdout_lines is defined
+        - cis_ubuntu2404_expiration_users_raw.stdout_lines | length > 0
+
+    - name: "SECTION5 | 5.4.1.1 | Report chage command results"
+      ansible.builtin.debug:
+        var: cis_ubuntu2404_chage_results.results
+      when: cis_ubuntu2404_chage_results is defined
 
 - name: "SECTION5 | 5.4.1.2 | Ensure minimum password days is configured"
   when:
