@@ -174,12 +174,24 @@
       changed_when: false
       failed_when: false
       check_mode: false
-    - name: "SECTION7 | 7.1.11 | Ensure world writable files and directories are secured | add sticky bit to world writeable directories"
+    - name: "SECTION7 | 7.1.11 | Ensure world writable files and directories are secured |  Attempt to add sticky bit to world writable directories"
       ansible.builtin.file:
         dest: "{{ item }}"
         mode: a+t
-      with_items: "{{ cis_ubuntu2404_no_world_writable_directories.stdout_lines }}"
-
+      loop: "{{ cis_ubuntu2404_no_world_writable_directories.stdout_lines }}"
+      register: sticky_result
+      failed_when: false
+      ignore_errors: true
+      loop_control:
+        label: "{{ item }}"
+    - name: "SECTION7 | 7.1.11 | Log skipped directories on read-only filesystems"
+      ansible.builtin.debug:
+        msg: "Skipped sticky-bit change on read-only filesystem: {{ item.item }}"
+      when: item.msg is search('Read-only file system')
+      loop: "{{ sticky_result.results | selectattr('failed', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.item }}"
+        
 - name: "SECTION7 | 7.1.12 | Ensure no files or directories without an owner and a group exist"
   when:
     - cis_ubuntu2404_rule_7_1_12
