@@ -159,7 +159,7 @@ cis_ubuntu2404_rule_3_3_11: true
 cis_ubuntu2404_rule_4_1_1: true # NOTE: implicit in rules below
 cis_ubuntu2404_rule_4_2_1: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
 cis_ubuntu2404_rule_4_2_2: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
-cis_ubuntu2404_rule_4_2_3: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
+cis_ubuntu2404_rule_4_2_3: false # NOTE: 'cis_ubuntu2404_firewall == ufw'  -- Disabled ny Kenneth Masis
 cis_ubuntu2404_rule_4_2_4: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
 cis_ubuntu2404_rule_4_2_5: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
 cis_ubuntu2404_rule_4_2_6: true # NOTE: 'cis_ubuntu2404_firewall == ufw'
