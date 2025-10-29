@@ -336,7 +336,7 @@ cis_ubuntu2404_rule_7_1_7: true
 cis_ubuntu2404_rule_7_1_8: true
 cis_ubuntu2404_rule_7_1_9: true
 cis_ubuntu2404_rule_7_1_10: true
-cis_ubuntu2404_rule_7_1_11: true  ## NOTE: disabled by kmasis
+cis_ubuntu2404_rule_7_1_11: false  ## NOTE: disabled by kmasis
 cis_ubuntu2404_rule_7_1_12: true
 cis_ubuntu2404_rule_7_1_13: true
 cis_ubuntu2404_rule_7_2_1: true
