@@ -109,7 +109,7 @@ cis_ubuntu2404_rule_2_1_16_remove: true
 cis_ubuntu2404_rule_2_1_17: true
 cis_ubuntu2404_rule_2_1_17_remove: true
 cis_ubuntu2404_rule_2_1_18: true
-cis_ubuntu2404_rule_2_1_18_remove: true
+cis_ubuntu2404_rule_2_1_18_remove: false  ## Do not remove apache -- updated by Kenneth Masis
 cis_ubuntu2404_rule_2_1_19: true
 cis_ubuntu2404_rule_2_1_19_remove: true
 cis_ubuntu2404_rule_2_1_20: true # NOTE: depends also on 'cis_ubuntu2404_allow_gdm_gui'
