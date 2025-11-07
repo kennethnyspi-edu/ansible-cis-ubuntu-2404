@@ -46,7 +46,7 @@
     - service_status_check_loop_2_1.results
       | selectattr('item', 'equalto', item)
       | map(attribute='stdout') | list | first
-      in ('loadedactive','loadedinactive')
+      in ('loaded','loadedactive','loadedinactive')
     - item not in (cis_ubuntu2404_effective_protected_services | default([]))
 
 - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | purge task"
@@ -60,7 +60,7 @@
 
     - name: "SECTION-X | SUB-TASK | Ensure services are not in use or purged | attempt purge service"
       ansible.builtin.apt:
-        name: "{{ outer_item.apt }}"
+        name: "{{ outer_item.apt | difference(cis_ubuntu2404_effective_protected_services | default([])) }}"
         state: absent
         purge: true
       register: purge_result

@@ -639,6 +639,11 @@ cis_ubuntu2404_protected_services:
   - ssh
   - sshd
   - ssh.service
+  - systemd-journald
+  - rsyslog
+  - systemd-timesyncd
+  - dbus
+  - networkd-dispatcher
 
 # Role-based service protection
 cis_ubuntu2404_role_protected_services:
@@ -657,6 +662,7 @@ cis_ubuntu2404_role_protected_services:
     - postgresql.service
   database_profile:
     - mysql
+    - mysqld
     - mysql.service
     - mariadb
     - mariadb.service
