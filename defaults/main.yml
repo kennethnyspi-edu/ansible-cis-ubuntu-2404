@@ -50,7 +50,7 @@ cis_ubuntu2404_rule_1_3_1_1: true
 cis_ubuntu2404_rule_1_3_1_2: true
 cis_ubuntu2404_rule_1_3_1_3: false # NOTE: disabled - will run to have all in complain-mode
 cis_ubuntu2404_rule_1_3_1_4: false # NOTE: disabled - will run to have all in enforce-mode
-cis_ubuntu2404_rule_1_4_1: true # NOTE: depends also on 'cis_ubuntu2404_set_boot_pass' and 'cis_ubuntu2404_disable_boot_pass'
+cis_ubuntu2404_rule_1_4_1: false # NOTE: depends also on 'cis_ubuntu2404_set_boot_pass' and 'cis_ubuntu2404_disable_boot_pass'
 cis_ubuntu2404_rule_1_4_2: true
 cis_ubuntu2404_rule_1_5_1: true
 cis_ubuntu2404_rule_1_5_2: true
@@ -410,6 +410,27 @@ cis_ubuntu2404_set_rsyslog_remote: false
 cis_ubuntu2404_install_aide: true # NOTE: depends also on 'cis_ubuntu2404_config_aide'
 cis_ubuntu2404_config_aide: true
 
+## Default variables for services 2.1.1-20
+cis_ubuntu2404_allow_avahi: false
+cis_ubuntu2404_allow_dhcp: false
+cis_ubuntu2404_allow_dns: false
+cis_ubuntu2404_allow_dnsmasq: false
+cis_ubuntu2404_allow_vsftpd: false
+cis_ubuntu2404_allow_ldap: false
+cis_ubuntu2404_allow_dovecot: false
+cis_ubuntu2404_allow_nfs: false
+cis_ubuntu2404_allow_nis: false
+## cis_ubuntu2404_allow_cups   ## Defined above
+cis_ubuntu2404_allow_rpcbind: true  ## always enabled by Kenneth Masis
+cis_ubuntu2404_allow_rsync: true ## always enabled by Kenneth Masis
+cis_ubuntu2404_allow_samba: false
+cis_ubuntu2404_allow_snmp: false
+cis_ubuntu2404_allow_tftp: false
+cis_ubuntu2404_allow_squid: false
+cis_ubuntu2404_allow_web_server: true  ##apache2,httpd,nginx
+cis_ubuntu2404_allow_xinetd: false
+cis_ubuntu2404_allow_gdm_gui: false
+
 # ------------------------------------------------------------------------------
 
 # SPECIAL variables
@@ -655,6 +676,10 @@ cis_ubuntu2404_role_protected_services:
     - docker.service
     - nginx
     - nginx.service
+    - rsync
+    - rsync.service
+    - rpcbind
+    - rpcbind.service
     - mariadb
     - mariadb.service
     - mariadb-server
@@ -693,45 +718,45 @@ cis_ubuntu2404_2_1_rule_set:
       - avahi-daemon.service
     apt:
       - avahi-daemon
-    disable: "{{ cis_ubuntu2404_rule_2_1_2 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_2_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_2 and not cis_ubuntu2404_allow_avahi }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_2_remove and not cis_ubuntu2404_allow_avahi }}"
   - title: SECTION2 | 2.1.3 | Ensure dhcp server services are not in use
     service:
       - isc-dhcp-server.service
       - isc-dhcp-server6.service
     apt:
       - isc-dhcp-server
-    disable: "{{ cis_ubuntu2404_rule_2_1_3 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_3_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_3 and not cis_ubuntu2404_allow_dhcp }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_3_remove and not cis_ubuntu2404_allow_dhcp }}"
   - title: SECTION2 | 2.1.4 | Ensure dns server services are not in use
     service:
       - named.service
       - bind9.service
     apt:
       - bind9
-    disable: "{{ cis_ubuntu2404_rule_2_1_4 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_4_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_4 and not cis_ubuntu2404_allow_dns }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_4_remove and not cis_ubuntu2404_allow_dns }}"
   - title: SECTION2 | 2.1.5 | Ensure dnsmasq services are not in use
     service:
       - dnsmasq.service
     apt:
       - dnsmasq
-    disable: "{{ cis_ubuntu2404_rule_2_1_5 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_5_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_5 and not cis_ubuntu2404_allow_dnsmasq }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_5_remove and not cis_ubuntu2404_allow_dnsmasq }}"
   - title: SECTION2 | 2.1.6 | Ensure ftp server services are not in use
     service:
       - vsftpd.service
     apt:
       - vsftpd
-    disable: "{{ cis_ubuntu2404_rule_2_1_6 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_6_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_6 and not cis_ubuntu2404_allow_vsftpd }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_6_remove and not cis_ubuntu2404_allow_vsftpd }}"
   - title: SECTION2 | 2.1.7 | Ensure ldap server services are not in use
     service:
       - slapd.service
     apt:
       - slapd
-    disable: "{{ cis_ubuntu2404_rule_2_1_7 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_7_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_7 and not cis_ubuntu2404_allow_ldap }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_7_remove and not cis_ubuntu2404_allow_ldap }}"
   - title: SECTION2 | 2.1.8 | Ensure message access server services are not in use
     service:
       - dovecot.socket
@@ -739,23 +764,23 @@ cis_ubuntu2404_2_1_rule_set:
     apt:
       - dovecot-imapd
       - dovecot-pop3d
-    disable: "{{ cis_ubuntu2404_rule_2_1_8 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_8_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_8 and not cis_ubuntu2404_allow_dovecot }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_8_remove and not cis_ubuntu2404_allow_dovecot }}"
   - title: SECTION2 | 2.1.9 | Ensure network file system services are not in use
     service:
       - nfs-server.service
     apt:
       - nfs-kernel-server
-    disable: "{{ cis_ubuntu2404_rule_2_1_9 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_9_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_9 and not cis_ubuntu2404_allow_nfs }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_9_remove and not cis_ubuntu2404_allow_nfs }}"
   - title: SECTION2 | 2.1.10 | Ensure nis server services are not in use
     service:
       - ypserv.service
     apt:
       - nis
       - ypserv
-    disable: "{{ cis_ubuntu2404_rule_2_1_10 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_10_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_10 and not cis_ubuntu2404_allow_nis }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_10_remove and not cis_ubuntu2404_allow_nis }}"
   - title: SECTION2 | 2.1.11 | Ensure print server services are not in use
     service:
       - cups.socket
@@ -770,43 +795,43 @@ cis_ubuntu2404_2_1_rule_set:
       - rpcbind.service
     apt:
       - rpcbind
-    disable: "{{ cis_ubuntu2404_rule_2_1_12 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_12_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_12 and not cis_ubuntu2404_allow_rpcbind }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_12_remove and not cis_ubuntu2404_allow_rpcbind }}"
   - title: SECTION2 | 2.1.13 | Ensure rsync services are not in use
     service:
       - rsync.service
     apt:
       - rsync
-    disable: "{{ cis_ubuntu2404_rule_2_1_13 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_13_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_13 and not cis_ubuntu2404_allow_rsync }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_13_remove and not cis_ubuntu2404_allow_rsync }}"
   - title: SECTION2 | 2.1.14 | Ensure samba file server services are not in use
     service:
       - smbd.service
     apt:
       - samba
-    disable: "{{ cis_ubuntu2404_rule_2_1_14 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_14_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_14 and not cis_ubuntu2404_allow_samba }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_14_remove and not cis_ubuntu2404_allow_samba }}"
   - title: SECTION2 | 2.1.15 | Ensure snmp services are not in use
     service:
       - snmpd.service
     apt:
       - snmpd
-    disable: "{{ cis_ubuntu2404_rule_2_1_15 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_15_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_15 and not cis_ubuntu2404_allow_snmp }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_15_remove and not cis_ubuntu2404_allow_snmp }}"
   - title: SECTION2 | 2.1.16 | Ensure tftp server services are not in use
     service:
       - tftpd-hpa.service
     apt:
       - tftpd-hpa
-    disable: "{{ cis_ubuntu2404_rule_2_1_16 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_16_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_16 and not cis_ubuntu2404_allow_tftp }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_16_remove and not cis_ubuntu2404_allow_tftp }}"
   - title: SECTION2 | 2.1.17 | Ensure web proxy server services are not in use
     service:
       - squid.service
     apt:
       - squid
-    disable: "{{ cis_ubuntu2404_rule_2_1_17 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_17_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_17 and not cis_ubuntu2404_allow_squid }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_17_remove and not cis_ubuntu2404_allow_squid }}"
   - title: SECTION2 | 2.1.18 | Ensure web server services are not in use
     service:
       - apache2.socket
@@ -816,15 +841,15 @@ cis_ubuntu2404_2_1_rule_set:
     apt:
       - apache2
       - nginx
-    disable: "{{ cis_ubuntu2404_rule_2_1_18 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_18_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_18 and not cis_ubuntu2404_allow_web_server }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_18_remove and not cis_ubuntu2404_allow_web_server }}"
   - title: SECTION2 | 2.1.19 | Ensure xinetd services are not in use
     service:
       - xinetd.service
     apt:
       - xinetd
-    disable: "{{ cis_ubuntu2404_rule_2_1_19 }}"
-    remove: "{{ cis_ubuntu2404_rule_2_1_19_remove }}"
+    disable: "{{ cis_ubuntu2404_rule_2_1_19 and not cis_ubuntu2404_allow_xinetd }}"
+    remove: "{{ cis_ubuntu2404_rule_2_1_19_remove and not cis_ubuntu2404_allow_xinetd }}"
   - title: SECTION2 | 2.1.20 | Ensure X window server services are not in use
     apt:
       - xserver-common
