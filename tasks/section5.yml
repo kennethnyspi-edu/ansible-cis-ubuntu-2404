@@ -625,10 +625,22 @@
     - server_l2
     - workstation_l2
   block:
-    - name: "SECTION5 | 5.2.4 | Ensure users must provide password for privilege escalation | update /etc/sudoers"
+#    - name: "SECTION5 | 5.2.4 | Ensure users must provide password for privilege escalation | update /etc/sudoers"
+#      ansible.builtin.replace:
+#        path: /etc/sudoers
+#        regexp: "^(?!#)(.*NOPASSWD.*)"
+#        replace: '#\1'
+#        validate: "visudo -cf %s"
+
+    - name: "SECTION5 | 5.2.4 | Comment NOPASSWD entries in /etc/sudoers (except ubuntu, ec2-user)"
       ansible.builtin.replace:
         path: /etc/sudoers
-        regexp: "^(?!#)(.*NOPASSWD.*)"
+        regexp: >-
+          ^(?!#)
+          (?!
+            ({{ cis_ubuntu2404_sudo_nopasswd_exceptions | join('|') }})\b
+          )
+          (.*NOPASSWD.*)
         replace: '#\1'
         validate: "visudo -cf %s"
 
@@ -639,13 +651,26 @@
         recurse: yes
       register: cis_ubuntu2404_sudoers_d_files
 
-    - name: "SECTION5 | 5.2.4 | Ensure users must provide password for privilege escalation | update '/etc/sudoers.d/*'"
+#    - name: "SECTION5 | 5.2.4 | Ensure users must provide password for privilege escalation | update '/etc/sudoers.d/*'"
+#      ansible.builtin.replace:
+#        path: "{{ item.path }}"
+#        regexp: "^(?!#)(.*NOPASSWD.*)"
+#        replace: '#\1'
+#        validate: "visudo -cf %s"
+#      with_items: "{{ cis_ubuntu2404_sudoers_d_files.files }}"
+
+    - name: "SECTION5 | 5.2.4 | Comment NOPASSWD entries in sudoers.d (except ubuntu, ec2-user)"
       ansible.builtin.replace:
         path: "{{ item.path }}"
-        regexp: "^(?!#)(.*NOPASSWD.*)"
+        regexp: >-
+          ^(?!#)
+          (?!
+            ({{ cis_ubuntu2404_sudo_nopasswd_exceptions | join('|') }})\b
+          )
+          (.*NOPASSWD.*)
         replace: '#\1'
         validate: "visudo -cf %s"
-      with_items: "{{ cis_ubuntu2404_sudoers_d_files.files }}"
+      loop: "{{ cis_ubuntu2404_sudoers_d_files.files }}"
 
 - name: "SECTION5 | 5.2.5 | Ensure re-authentication for privilege escalation is not disabled globally"
   when:
