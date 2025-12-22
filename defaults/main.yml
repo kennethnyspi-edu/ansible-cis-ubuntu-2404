@@ -562,6 +562,9 @@ cis_ubuntu2404_rule_5_1_24_ssh_user: "{{ ansible_user }}"
 cis_ubuntu2404_sudo_nopasswd_exceptions:
   - ubuntu
   - ec2-user
+  - kennethnypi
+  - angienypi
+  - waseemnypi
   
 # (cis_ubuntu2404_rule_5_2_6)
 cis_ubuntu2404_sudo_timestamp_timeout: 15 # 15 minutes or less as per your site policy
