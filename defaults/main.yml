@@ -673,6 +673,8 @@ cis_ubuntu2404_protected_services:
   - systemd-timesyncd
   - dbus
   - networkd-dispatcher
+  - xrdp.service
+  - rpcbind
 
 # Role-based service protection
 cis_ubuntu2404_role_protected_services:
