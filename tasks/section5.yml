@@ -1818,25 +1818,22 @@
     - server_l1
     - workstation_l1
   block:
-    - name: "SECTION5 | 5.4.3.2 | Ensure default user shell timeout is configured | remove existing TMOUT"
-      ansible.builtin.lineinfile:
-        dest: "{{ item }}"
-        regexp: '{{ cis_ubuntu2404_regex_base_search }}(readonly|export)\s+TMOUT'
-        state: absent
-      with_items:
-        - /etc/bash.bashrc
-        - /etc/profile
-        - /etc/bashrc
-    - name: "SECTION5 | 5.4.3.2 | Ensure default user shell timeout is configured | add TMOUT line"
-      ansible.builtin.lineinfile:
+    - name: "SECTION5 | 5.4.3.2 | Deploy TMOUT profile script"
+      ansible.builtin.copy:
         dest: /etc/profile.d/99-tmout.sh
-        regexp: '{{ cis_ubuntu2404_regex_base_search }}readonly\s+TMOUT=\d+\s+;\s+export\s+TMOUT'
-        line: "readonly TMOUT=900 ; export TMOUT"
-        state: present
-        create: true
         owner: root
         group: root
         mode: "0644"
+        content: |
+          #!/bin/bash
+          # CIS 5.4.3.2 - Ensure default user shell timeout is 900 seconds or less
+          # XRDP-safe: applies only to interactive shells
+
+          if [ -n "$PS1" ]; then
+              TMOUT=900
+              readonly TMOUT
+              export TMOUT
+          fi
 
 - name: "SECTION5 | 5.4.3.3 | Ensure default user umask is configured"
   when:

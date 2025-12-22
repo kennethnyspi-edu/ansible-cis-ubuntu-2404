@@ -280,7 +280,7 @@ cis_ubuntu2404_rule_6_1_3_5: true # NOTE: rsyslog - depends also on 'cis_ubuntu2
 cis_ubuntu2404_rule_6_1_3_6: true # NOTE: rsyslog-remote - depends also on 'cis_ubuntu2404_preferred_capturing_log_method' and 'cis_ubuntu2404_set_rsyslog_remote'
 cis_ubuntu2404_rule_6_1_3_7: true # NOTE: rsyslog - depends also on 'cis_ubuntu2404_preferred_capturing_log_method'
 cis_ubuntu2404_rule_6_1_3_8: true # NOTE: rsyslog - depends also on 'cis_ubuntu2404_preferred_capturing_log_method'
-cis_ubuntu2404_rule_6_1_4_1: true
+cis_ubuntu2404_rule_6_1_4_1: false  # Disabled by Kenneth Masis 12/22/2025
 cis_ubuntu2404_rule_6_2_1_1: true
 cis_ubuntu2404_rule_6_2_1_2: true
 cis_ubuntu2404_rule_6_2_1_3: true
