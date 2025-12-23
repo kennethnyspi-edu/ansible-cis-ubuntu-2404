@@ -96,8 +96,8 @@ cis_ubuntu2404_rule_2_1_10: true
 cis_ubuntu2404_rule_2_1_10_remove: true
 cis_ubuntu2404_rule_2_1_11: true # NOTE: depends also on 'cis_ubuntu2404_allow_cups'
 cis_ubuntu2404_rule_2_1_11_remove: true # NOTE: depends also on 'cis_ubuntu2404_allow_cups'
-cis_ubuntu2404_rule_2_1_12: true
-cis_ubuntu2404_rule_2_1_12_remove: true
+cis_ubuntu2404_rule_2_1_12: false   # Disable removing rpcbind
+cis_ubuntu2404_rule_2_1_12_remove: false
 cis_ubuntu2404_rule_2_1_13: true
 cis_ubuntu2404_rule_2_1_13_remove: true
 cis_ubuntu2404_rule_2_1_14: true
@@ -112,9 +112,9 @@ cis_ubuntu2404_rule_2_1_18: false
 cis_ubuntu2404_rule_2_1_18_remove: false  ## Do not remove apache -- updated by Kenneth Masis
 cis_ubuntu2404_rule_2_1_19: true
 cis_ubuntu2404_rule_2_1_19_remove: true
-cis_ubuntu2404_rule_2_1_20: true # NOTE: depends also on 'cis_ubuntu2404_allow_gdm_gui'
-cis_ubuntu2404_rule_2_1_20_remove: true # NOTE: depends also on 'cis_ubuntu2404_allow_gdm_gui'
-cis_ubuntu2404_rule_2_1_21: true
+cis_ubuntu2404_rule_2_1_20: false # NOTE: depends also on 'cis_ubuntu2404_allow_gdm_gui'
+cis_ubuntu2404_rule_2_1_20_remove: false # NOTE: depends also on 'cis_ubuntu2404_allow_gdm_gui'
+cis_ubuntu2404_rule_2_1_21: false # updated by Kenneth Masis
 cis_ubuntu2404_rule_2_1_22: false # updated by Kenneth Masis
 cis_ubuntu2404_rule_2_2_1: true
 cis_ubuntu2404_rule_2_2_2: true
