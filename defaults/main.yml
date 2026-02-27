@@ -677,6 +677,8 @@ cis_ubuntu2404_protected_services:
   - networkd-dispatcher
   - xrdp.service
   - rpcbind
+  - rpcbind.service
+  - rpcbind.socket
 
 # Role-based service protection
 cis_ubuntu2404_role_protected_services:
@@ -692,9 +694,13 @@ cis_ubuntu2404_role_protected_services:
     - rsync.service
     - rpcbind
     - rpcbind.service
+    - rpcbind.socket
     - mariadb
     - mariadb.service
     - mariadb-server
+    - rpcbind
+    - rpcbind.service
+    - rpcbind.socket
     - postgresql
     - postgresql.service
   database_profile:
