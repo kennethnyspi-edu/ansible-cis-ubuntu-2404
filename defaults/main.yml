@@ -565,6 +565,7 @@ cis_ubuntu2404_sudo_nopasswd_exceptions:
   - kennethnypi
   - angienypi
   - waseemnypi
+  - ansible-user
   
 # (cis_ubuntu2404_rule_5_2_6)
 cis_ubuntu2404_sudo_timestamp_timeout: 15 # 15 minutes or less as per your site policy
