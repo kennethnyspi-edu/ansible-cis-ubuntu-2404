@@ -363,6 +363,7 @@ cis_excluded_fstypes:
   - iso9660
   - efivarfs
   - selinuxfs
+  - lustre
 
 cis_excluded_fstypes_regex: "{{ cis_excluded_fstypes | join('|') }}"
 
