@@ -469,6 +469,12 @@
         file_type: file
         recurse: true
       register: cis_ubuntu2404_logfiles
+      excludes:
+          - "*.journal"
+          - "*.journal~"
+      changed_when: false
+      check_mode: false
+
     - name: "SECTION6 | 6.1.4.1 | Ensure access to all logfiles has been configured | set logfile access"
       ansible.builtin.file:
         dest: "{{ item.path }}"
@@ -486,6 +492,7 @@
       register: cis_ubuntu2404_rule_6_1_4_1_result
       failed_when: false
       changed_when: false
+      
     - name: "SECTION6 | 6.1.4.1 | Log failures if any"
       ansible.builtin.debug:
         msg: "Failed to set access on {{ item.item.path }} → {{ item.msg }}"
