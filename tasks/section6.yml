@@ -468,10 +468,10 @@
         paths: /var/log/
         file_type: file
         recurse: true
-      register: cis_ubuntu2404_logfiles
-      excludes:
+        excludes:
           - "*.journal"
           - "*.journal~"
+      register: cis_ubuntu2404_logfiles
       changed_when: false
       check_mode: false
 
