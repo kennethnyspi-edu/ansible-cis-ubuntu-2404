@@ -282,7 +282,36 @@
       community.general.modprobe:
         name: usb-storage
         state: absent
+      register: cis_1_1_1_9_modprobe_result
+      failed_when:
+        - cis_1_1_1_9_modprobe_result.rc is defined
+        - cis_1_1_1_9_modprobe_result.rc != 0
+        - "'in use' not in (cis_1_1_1_9_modprobe_result.stderr | default(''))"
+      changed_when:
+        - cis_1_1_1_9_modprobe_result.msg is not defined
+        - cis_1_1_1_9_modprobe_result.state | default('') != 'absent'
       when: ansible_virtualization_type != "docker"
+
+    - name: >
+        SECTION1 | 1.1.1.9 | Ensure usb-storage kernel module is not available | warn if module in use
+      ansible.builtin.debug:
+        msg: >-
+          WARNING: Host {{ inventory_hostname }}: usb_storage module is
+          currently in use and could not be unloaded. Blacklisting applied
+          — reboot required for full remediation.
+      when:
+        - ansible_virtualization_type != "docker"
+        - cis_1_1_1_9_modprobe_result is defined
+        - "'in use' in (cis_1_1_1_9_modprobe_result.stderr | default(''))"
+
+    - name: >
+        SECTION1 | 1.1.1.9 | Ensure usb-storage kernel module is not available | flag reboot required
+      ansible.builtin.set_fact:
+        cis_reboot_required: true
+      when:
+        - ansible_virtualization_type != "docker"
+        - cis_1_1_1_9_modprobe_result is defined
+        - "'in use' in (cis_1_1_1_9_modprobe_result.stderr | default(''))"
 
 - name: "SECTION1 | 1.1.1.10 | Ensure unused filesystems kernel modules are not available"
   when:
