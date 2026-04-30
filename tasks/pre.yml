@@ -34,6 +34,28 @@
 
 # ------------------------------------------------------------------------------
 
+- name: "PRE | Ensure ansible tmp directory is owned by connection user"
+  ansible.builtin.file:
+    path: /var/tmp/.ansible
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0700'
+  become: true
+  tags: always
+
+- name: "PRE | Ensure ansible tmp subdirectory is writable"
+  ansible.builtin.file:
+    path: /var/tmp/.ansible/tmp
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0700'
+  become: true
+  tags: always
+
+# ------------------------------------------------------------------------------
+
 - name: "PRE | 1.4.2 | check the grub.cfg configuration"
   ansible.builtin.stat:
     path: /boot/grub/grub.cfg
