@@ -45,7 +45,7 @@ cis_ubuntu2404_rule_1_1_2_2: true # /dev/shm
 # cis_ubuntu2404_rule_1_1_2_7: true # NOTE: not implemented, separate partition not created
 cis_ubuntu2404_rule_1_2_1_1: true
 cis_ubuntu2404_rule_1_2_1_2: true
-cis_ubuntu2404_rule_1_2_2_1: true
+cis_ubuntu2404_rule_1_2_2_1: false  ## disabled by Kenneth Masis 05/13/2026
 cis_ubuntu2404_rule_1_3_1_1: true
 cis_ubuntu2404_rule_1_3_1_2: true
 cis_ubuntu2404_rule_1_3_1_3: false # NOTE: disabled - will run to have all in complain-mode
