@@ -873,7 +873,6 @@ cis_ubuntu2404_2_1_rule_set:
       - xserver-common
       - xserver-xorg
       - xorg
-      - x11*
     disable: "{{ cis_ubuntu2404_rule_2_1_20 and not cis_ubuntu2404_allow_gdm_gui }}"
     remove: "{{ cis_ubuntu2404_rule_2_1_20_remove and not cis_ubuntu2404_allow_gdm_gui }}"
 
