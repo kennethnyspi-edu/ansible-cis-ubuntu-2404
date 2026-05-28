@@ -581,12 +581,10 @@
       register: cis_ubuntu2404_local_interactive_user_dot_files_found
     - name: "SECTION7 | 7.2.10 | Ensure local interactive user dot files access is configured | set permission"
       ansible.builtin.file:
-        path: "{{ item.path }}"
+        path: "{{ item.1.path }}"
         mode: u-x,g-wx,o-rwx
-        owner: "{{ item.uid }}"
-        group: "{{ item.gid }}"
-      with_items: "{{ cis_ubuntu2404_local_interactive_user_dot_files_found.results | map(attribute='files') | flatten }}"
+        owner: "{{ item.0.item.split()[0] }}"
+        group: "{{ item.0.item.split()[0] }}"
+      loop: "{{ cis_ubuntu2404_local_interactive_user_dot_files_found.results | subelements('files', skip_missing=True) }}"
       when:
-        - cis_ubuntu2404_local_interactive_user_dot_files_found.results | map(attribute='files') | flatten | selectattr('path', 'defined')
-        - cis_ubuntu2404_local_interactive_user_dot_files_found.results | map(attribute='files') | flatten | selectattr('uid', 'defined')
-        - cis_ubuntu2404_local_interactive_user_dot_files_found.results | map(attribute='files') | flatten | selectattr('gid', 'defined')
+        - item.1.path is defined
