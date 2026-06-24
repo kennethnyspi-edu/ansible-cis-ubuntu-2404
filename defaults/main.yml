@@ -381,6 +381,7 @@ cis_excluded_paths:
   - /NINAGAOS
   - /mindsmb
   - /MIND-src
+  - /mrioperations
 
 # ------------------------------------------------------------------------------
 # HELPER
